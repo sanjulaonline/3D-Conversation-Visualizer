@@ -204,8 +204,19 @@ export const stopWords = new Set([
   "help",
 ])
 
+interface ConversationMessage {
+  content?: {
+    content_type?: string
+    parts?: (string | { text?: string })[]
+  }
+}
+
+interface ConversationData {
+  mapping?: Record<string, { message?: ConversationMessage }>
+}
+
 export const extractWordsFromConversations = async (
-  conversationsData: any[],
+  conversationsData: ConversationData[],
   numWordsLimit: number,
 ): Promise<Analysis> => {
   let allText = ""
@@ -231,7 +242,7 @@ export const extractWordsFromConversations = async (
                   for (const part of parts) {
                     if (typeof part === "string") {
                       allText += part + " "
-                    } else if (typeof part === "object" && part.text) {
+                    } else if (typeof part === "object" && part && 'text' in part && part.text) {
                       allText += part.text + " "
                     }
                   }
