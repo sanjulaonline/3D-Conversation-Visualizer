@@ -1,4 +1,5 @@
 import type React from "react"
+import { useState, useEffect } from "react"
 import { WordCountWarning } from "@/types"
 
 interface HeaderProps {
@@ -32,6 +33,19 @@ const Header: React.FC<HeaderProps> = ({
   onWordCountChange,
   wordCountWarning,
 }) => {
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1024)
+    }
+    
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
   return (
     <div
       style={{
@@ -39,46 +53,65 @@ const Header: React.FC<HeaderProps> = ({
         top: 0,
         left: 0,
         width: "100%",
-        height: "80px",
-        padding: "20px 40px",
+        height: isMobile ? "auto" : "80px",
+        padding: isMobile ? "12px 16px" : "20px 40px",
         display: isFullscreen ? "none" : "flex",
-        alignItems: "center",
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "stretch" : "center",
         justifyContent: "space-between",
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(0,0,0,0.1)",
+        backdropFilter: "blur(10px)",
         color: "white",
         zIndex: 50,
-        pointerEvents: "none"
+        pointerEvents: "none",
+        gap: isMobile ? "12px" : "0"
       }}
     >
       {/* Left Section */}
-      <div style={{ display: "flex", alignItems: "center", gap: "40px", pointerEvents: "all" }}>
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        gap: isMobile ? "12px" : isTablet ? "24px" : "40px", 
+        pointerEvents: "all",
+        flexWrap: isMobile ? "wrap" : "nowrap",
+        width: isMobile ? "100%" : "auto"
+      }}>
         <p
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: 20,
+            fontSize: isMobile ? 16 : 20,
             fontWeight: "700",
+            alignItems: "center",
             letterSpacing: -1,
             margin: 0,
-            color: "white"
+            color: "white",
+            minWidth: "fit-content"
           }}
         >
           VISUALIZER
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: isMobile ? "8px" : "16px",
+          flexWrap: isMobile ? "wrap" : "nowrap",
+          flex: isMobile ? "1" : "none"
+        }}>
           <label
             style={{
               position: "relative",
               cursor: "pointer",
-              fontSize: 12,
+              fontSize: isMobile ? 10 : 12,
               fontWeight: "500",
               textTransform: "uppercase",
               letterSpacing: 0.5,
-              padding: "8px 16px",
+              padding: isMobile ? "6px 12px" : "8px 16px",
               border: "1px solid white",
               backgroundColor: "transparent",
               color: "white",
-              transition: "all 0.3s ease"
+              transition: "all 0.3s ease",
+              minWidth: "fit-content"
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "white"
@@ -102,41 +135,47 @@ const Header: React.FC<HeaderProps> = ({
                 cursor: "pointer"
               }}
             />
-            {selectedFile ? selectedFile.name.slice(0, 15) + "..." : "SELECT FILE"}
+            {selectedFile ? (
+              isMobile ? "FILE" : selectedFile.name.slice(0, 12) + "..."
+            ) : (
+              isMobile ? "SELECT" : "SELECT FILE"
+            )}
           </label>
 
           <button
             onClick={onAnalyze}
             disabled={!selectedFile || isAnalyzing}
             style={{
-              fontSize: 12,
+              fontSize: isMobile ? 10 : 12,
               fontWeight: "700",
               textTransform: "uppercase",
               letterSpacing: 0.5,
-              padding: "8px 16px",
+              padding: isMobile ? "6px 12px" : "8px 16px",
               border: "2px solid white",
               backgroundColor: !selectedFile || isAnalyzing ? "rgba(255,255,255,0.3)" : "white",
               color: !selectedFile || isAnalyzing ? "rgba(255,255,255,0.5)" : "black",
               cursor: !selectedFile || isAnalyzing ? "not-allowed" : "pointer",
-              transition: "all 0.3s ease"
+              transition: "all 0.3s ease",
+              minWidth: "fit-content"
             }}
           >
-            {isAnalyzing ? "ANALYZING..." : "GENERATE"}
+            {isAnalyzing ? (isMobile ? "..." : "ANALYZING...") : (isMobile ? "GO" : "GENERATE")}
           </button>
 
           <button
             onClick={onShowHowTo}
             style={{
-              fontSize: 12,
+              fontSize: isMobile ? 10 : 12,
               fontWeight: "500",
               textTransform: "uppercase",
               letterSpacing: 0.5,
-              padding: "8px 16px",
+              padding: isMobile ? "6px 12px" : "8px 16px",
               border: "1px solid rgba(255,255,255,0.5)",
               backgroundColor: "transparent",
               color: "rgba(255,255,255,0.7)",
               cursor: "pointer",
-              transition: "all 0.3s ease"
+              transition: "all 0.3s ease",
+              minWidth: "fit-content"
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "white"
@@ -147,25 +186,34 @@ const Header: React.FC<HeaderProps> = ({
               e.currentTarget.style.color = "rgba(255,255,255,0.7)"
             }}
           >
-            HELP
+            {isMobile ? "?" : "HELP"}
           </button>
         </div>
       </div>
 
       {/* Right Section */}
       {sceneInitialized && (
-        <div style={{ display: "flex", alignItems: "center", gap: "24px", pointerEvents: "all" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: isMobile ? "8px" : isTablet ? "16px" : "24px", 
+          pointerEvents: "all",
+          flexWrap: isMobile ? "wrap" : "nowrap",
+          width: isMobile ? "100%" : "auto",
+          justifyContent: isMobile ? "space-between" : "flex-end"
+        }}>
           <label
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
+              gap: "6px",
               cursor: "pointer",
-              fontSize: 12,
+              fontSize: isMobile ? 10 : 12,
               fontWeight: "500",
               textTransform: "uppercase",
               letterSpacing: 0.5,
-              color: "white"
+              color: "white",
+              minWidth: "fit-content"
             }}
           >
             <input
@@ -173,27 +221,28 @@ const Header: React.FC<HeaderProps> = ({
               checked={autoRotation}
               onChange={(e) => onAutoRotationChange(e.target.checked)}
               style={{
-                width: 16,
-                height: 16,
+                width: isMobile ? 12 : 16,
+                height: isMobile ? 12 : 16,
                 accentColor: "white"
               }}
             />
-            AUTO ROTATE
+            {isMobile ? "AUTO" : "AUTO ROTATE"}
           </label>
 
           <button
             onClick={onToggleFullscreen}
             style={{
-              fontSize: 12,
+              fontSize: isMobile ? 10 : 12,
               fontWeight: "500",
               textTransform: "uppercase",
               letterSpacing: 0.5,
-              padding: "8px 16px",
+              padding: isMobile ? "6px 8px" : "8px 16px",
               border: "1px solid rgba(255,255,255,0.5)",
               backgroundColor: "transparent",
               color: "rgba(255,255,255,0.7)",
               cursor: "pointer",
-              transition: "all 0.3s ease"
+              transition: "all 0.3s ease",
+              minWidth: "fit-content"
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "white"
@@ -204,59 +253,76 @@ const Header: React.FC<HeaderProps> = ({
               e.currentTarget.style.color = "rgba(255,255,255,0.7)"
             }}
           >
-            {isFullscreen ? "EXIT FULL" : "FULLSCREEN"}
+            {isFullscreen ? (isMobile ? "EXIT" : "EXIT FULL") : (isMobile ? "FULL" : "FULLSCREEN")}
           </button>
 
-          <div
-            style={{
+          {!isMobile && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: isTablet ? "8px" : "12px",
+                padding: isTablet ? "6px 12px" : "8px 16px",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backgroundColor: "rgba(0,0,0,0.2)",
+                minWidth: "fit-content"
+              }}
+            >
+              <span
+                style={{
+                  fontSize: isTablet ? 10 : 12,
+                  fontWeight: "500",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.5,
+                  color: "white"
+                }}
+              >
+                WORDS:
+              </span>
+              <input
+                type="range"
+                min="50"
+                max="2000"
+                step="50"
+                value={wordCount}
+                onChange={(e) => onWordCountChange(Number.parseInt(e.target.value))}
+                style={{
+                  width: isTablet ? 60 : 80,
+                  height: 4,
+                  backgroundColor: "rgba(255,255,255,0.3)",
+                  borderRadius: 2,
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isTablet ? 10 : 12,
+                  fontWeight: "700",
+                  fontFamily: "monospace",
+                  minWidth: isTablet ? 30 : 40,
+                  textAlign: "center",
+                  color: "white"
+                }}
+              >
+                {wordCount}
+              </span>
+            </div>
+          )}
+
+          {/* Mobile Word Count - Simplified */}
+          {isMobile && (
+            <div style={{
               display: "flex",
               alignItems: "center",
-              gap: "12px",
-              padding: "8px 16px",
-              border: "1px solid rgba(255,255,255,0.3)",
-              backgroundColor: "rgba(0,0,0,0.2)"
-            }}
-          >
-            <span
-              style={{
-                fontSize: 12,
-                fontWeight: "500",
-                textTransform: "uppercase",
-                letterSpacing: 0.5,
-                color: "white"
-              }}
-            >
-              WORDS:
-            </span>
-            <input
-              type="range"
-              min="50"
-              max="2000"
-              step="50"
-              value={wordCount}
-              onChange={(e) => onWordCountChange(Number.parseInt(e.target.value))}
-              style={{
-                width: 80,
-                height: 4,
-                backgroundColor: "rgba(255,255,255,0.3)",
-                borderRadius: 2,
-                outline: "none",
-                cursor: "pointer"
-              }}
-            />
-            <span
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                fontFamily: "monospace",
-                minWidth: 40,
-                textAlign: "center",
-                color: "white"
-              }}
-            >
-              {wordCount}
-            </span>
-          </div>
+              gap: "6px",
+              fontSize: 10,
+              color: "white"
+            }}>
+              <span>W:</span>
+              <span style={{ fontFamily: "monospace", fontWeight: "700" }}>{wordCount}</span>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { useGLTF, Stage, Grid, OrbitControls, Environment } from "@react-three/drei"
 import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing"
@@ -10,8 +10,45 @@ interface LandingHeroProps {
   onGetStarted: () => void
 }
 
+// Loading component for 3D scene
+function LoadingFallback() {
+  return (
+    <div style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      color: "white",
+      fontSize: 14,
+      fontWeight: "500",
+      textTransform: "uppercase",
+      letterSpacing: 1,
+      display: "flex",
+      alignItems: "center",
+      gap: "12px"
+    }}>
+      <div style={{
+        width: 16,
+        height: 16,
+        border: "2px solid rgba(255,255,255,0.3)",
+        borderTop: "2px solid white",
+        borderRadius: "50%",
+        animation: "spin 1s linear infinite"
+      }} />
+      LOADING 3D MODEL...
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 export default function LandingHero({ onGetStarted }: LandingHeroProps) {
   const [isLargeScreen, setIsLargeScreen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,8 +61,14 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
     // Add event listener
     window.addEventListener('resize', handleResize)
     
+    // Simulate loading completion after a short delay
+    const timer = setTimeout(() => setIsLoading(false), 2000)
+    
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(timer)
+    }
   }, [])
   return (
     <div className="relative w-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
@@ -33,11 +76,12 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
       <div className="absolute inset-0">
         <Canvas flat shadows camera={{ position: [-15, 0, 10], fov: 25 }}>
           <fog attach="fog" args={["#0f0f23", 15, 22.5]} />
-          <Stage intensity={0.5} environment="city" shadows={{ type: 'accumulative', bias: -0.001, intensity: Math.PI }} adjustCamera={false}
-          >
-            <Kamdo rotation={[0, Math.PI, 0]} />
-          </Stage>
-          <Grid renderOrder={-1} position={[0, -1.85, 0]} infiniteGrid cellSize={0.6} cellThickness={0.6} sectionSize={3.3} sectionThickness={1.5} sectionColor="#7f7fff" fadeDistance={30} />
+          <Suspense fallback={null}>
+            <Stage intensity={0.5} environment="city" shadows={{ type: 'accumulative', bias: -0.001, intensity: Math.PI }} adjustCamera={false}>
+              <Kamdo rotation={[0, Math.PI, 0]} />
+            </Stage>
+            <Grid renderOrder={-1} position={[0, -1.85, 0]} infiniteGrid cellSize={0.6} cellThickness={0.6} sectionSize={3.3} sectionThickness={1.5} sectionColor="#7f7fff" fadeDistance={30} />
+          </Suspense>
           <OrbitControls
             autoRotate
             autoRotateSpeed={0.05}
@@ -52,6 +96,9 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
           </EffectComposer>
           <Environment background preset="sunset" blur={0.8} />
         </Canvas>
+        
+        {/* Loading Overlay */}
+        {isLoading && <LoadingFallback />}
       </div>
 
       {/* UI Overlay - Minimal Typography Style */}
