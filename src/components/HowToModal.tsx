@@ -18,33 +18,27 @@ export default function HowToModal({ isOpen, onClose }: HowToModalProps) {
       alt: "ChatGPT Settings menu with Settings option highlighted"
     },
     {
-      title: "Step 2: Navigate to Data Controls",
-      description: "In the settings menu, find and click on 'Data controls' in the left sidebar.",
-      image: "/images/step2-data-controls.png", 
-      alt: "Settings page with Data controls section highlighted"
-    },
-    {
-      title: "Step 3: Export Your Data",
-      description: "Find the 'Export data' section and click the 'Export' button to request your data.",
-      image: "/images/step3-export-data.png",
+      title: "Step 2: Navigate to Data Controls & Export Data",
+      description: "In the settings menu, click on 'Data controls' in the left sidebar, then find the 'Export data' section and click the 'Export' button to request your data.",
+      image: "/images/step2-data-controls-export.png", 
       alt: "Data controls page with Export data button highlighted"
     },
     {
-      title: "Step 4: Confirm Export Request",
+      title: "Step 3: Confirm Export Request",
       description: "A confirmation dialog will appear. Click 'Confirm export' to proceed with the data export request.",
-      image: "/images/step4-confirm-export.png",
+      image: "/images/step3-confirm-export.png",
       alt: "Confirmation dialog with Confirm export button highlighted"
     },
     {
-      title: "Step 5: Download from Email",
+      title: "Step 4: Download from Email",
       description: "You'll receive an email from OpenAI with a download link. Click 'Download data export' in the email.",
-      image: "/images/step5-email-download.png",
+      image: "/images/step4-email-download.png",
       alt: "OpenAI email with Download data export button highlighted"
     },
     {
-      title: "Step 6: Extract conversations.json",
+      title: "Step 5: Extract conversations.json",
       description: "Extract the downloaded ZIP file and locate the 'conversations.json' file to upload here.",
-      image: "/images/step6-extract-file.png",
+      image: "/images/step5-extract-file.png",
       alt: "File explorer showing extracted conversations.json file"
     }
   ]
