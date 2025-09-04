@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, ThreeElements } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
@@ -11,16 +11,14 @@ const easing = {
   }
 }
 
-interface IndustrialDivinitiesProps {
-  [key: string]: any
-}
-
-export function IndustrialDivinities(props: IndustrialDivinitiesProps) {
+export function IndustrialDivinities(props: ThreeElements['group']) {
   const head = useRef<THREE.Group>(null!)
   const stripe = useRef<THREE.MeshBasicMaterial>(null!)
   const light = useRef<THREE.PointLight>(null!)
   
-  const { nodes, materials } = useGLTF('/s2wt_kamdo_industrial_divinities-transformed.glb')
+  const gltf = useGLTF('/s2wt_kamdo_industrial_divinities-transformed.glb')
+  const nodes = gltf.nodes as Record<string, THREE.Mesh>
+  const materials = gltf.materials as Record<string, THREE.Material>
   
   useFrame((state, delta) => {
     const t = (1 + Math.sin(state.clock.elapsedTime * 2)) / 2
@@ -45,20 +43,20 @@ export function IndustrialDivinities(props: IndustrialDivinitiesProps) {
       <mesh 
         castShadow 
         receiveShadow 
-        geometry={(nodes as any).body001.geometry} 
-        material={(materials as any).Body} 
+        geometry={nodes.body001?.geometry} 
+        material={materials.Body} 
       />
       <group ref={head}>
         <mesh 
           castShadow 
           receiveShadow 
-          geometry={(nodes as any).head001.geometry} 
-          material={(materials as any).Head} 
+          geometry={nodes.head001?.geometry} 
+          material={materials.Head} 
         />
         <mesh 
           castShadow 
           receiveShadow 
-          geometry={(nodes as any).stripe001.geometry}
+          geometry={nodes.stripe001?.geometry}
         >
           <meshBasicMaterial ref={stripe} toneMapped={false} />
           <pointLight ref={light} intensity={1} color={[10, 2, 5]} distance={2.5} />

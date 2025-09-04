@@ -1,10 +1,11 @@
 "use client"
 
 import { useRef, useState, useEffect, Suspense } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
+import { Canvas, useFrame, ThreeElements } from "@react-three/fiber"
 import { useGLTF, Stage, Grid, OrbitControls, Environment } from "@react-three/drei"
 import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing"
 import { easing } from "maath"
+import * as THREE from "three"
 
 interface LandingHeroProps {
   onGetStarted: () => void
@@ -505,11 +506,14 @@ Source: https://sketchfab.com/3d-models/s2wt-kamdo-industrial-divinities-f503b70
 Title: S2WT "Kamdo" (Industrial Divinities)
 */
 
-function Kamdo(props: any) {
-  const head = useRef<any>(null)
-  const stripe = useRef<any>(null)
-  const light = useRef<any>(null)
-  const { nodes, materials } = useGLTF("/s2wt_kamdo_industrial_divinities-transformed.glb")
+function Kamdo(props: ThreeElements['group']) {
+  const head = useRef<THREE.Group>(null!)
+  const stripe = useRef<THREE.MeshBasicMaterial>(null!)
+  const light = useRef<THREE.PointLight>(null!)
+  const gltf = useGLTF("/s2wt_kamdo_industrial_divinities-transformed.glb")
+  const nodes = gltf.nodes as Record<string, THREE.Mesh>
+  const materials = gltf.materials as Record<string, THREE.Material>
+  
   useFrame((state, delta) => {
     const t = (1 + Math.sin(state.clock.elapsedTime * 2)) / 2
     if (stripe.current) {
@@ -524,10 +528,10 @@ function Kamdo(props: any) {
   })
   return (
     <group {...props}>
-      <mesh castShadow receiveShadow geometry={(nodes as any).body001.geometry} material={(materials as any).Body} />
+      <mesh castShadow receiveShadow geometry={nodes.body001?.geometry} material={materials.Body} />
       <group ref={head}>
-        <mesh castShadow receiveShadow geometry={(nodes as any).head001.geometry} material={(materials as any).Head} />
-        <mesh castShadow receiveShadow geometry={(nodes as any).stripe001.geometry}>
+        <mesh castShadow receiveShadow geometry={nodes.head001?.geometry} material={materials.Head} />
+        <mesh castShadow receiveShadow geometry={nodes.stripe001?.geometry}>
           <meshBasicMaterial ref={stripe} toneMapped={false} />
           <pointLight ref={light} intensity={1} color={[10, 2, 5]} distance={2.5} />
         </mesh>
