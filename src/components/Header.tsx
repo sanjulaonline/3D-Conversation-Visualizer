@@ -162,32 +162,74 @@ const Header: React.FC<HeaderProps> = ({
             {isAnalyzing ? (isMobile ? "..." : "ANALYZING...") : (isMobile ? "GO" : "GENERATE")}
           </button>
 
-          <button
-            onClick={onShowHowTo}
-            style={{
-              fontSize: isMobile ? 10 : 12,
-              fontWeight: "500",
-              textTransform: "uppercase",
-              letterSpacing: 0.5,
-              padding: isMobile ? "6px 12px" : "8px 16px",
-              border: "1px solid rgba(255,255,255,0.5)",
-              backgroundColor: "transparent",
-              color: "rgba(255,255,255,0.7)",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              minWidth: "fit-content"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "white"
-              e.currentTarget.style.color = "white"
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"
-              e.currentTarget.style.color = "rgba(255,255,255,0.7)"
-            }}
-          >
-            {isMobile ? "?" : "HELP"}
-          </button>
+          {!isMobile && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: isTablet ? "8px" : "12px",
+                padding: isTablet ? "6px 12px" : "8px 16px",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backgroundColor: "rgba(0,0,0,0.2)",
+                minWidth: "fit-content"
+              }}
+            >
+              <span
+                style={{
+                  fontSize: isTablet ? 10 : 12,
+                  fontWeight: "500",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.5,
+                  color: "white"
+                }}
+              >
+                WORDS:
+              </span>
+              <input
+                type="range"
+                min="50"
+                max="2000"
+                step="50"
+                value={wordCount}
+                onChange={(e) => onWordCountChange(Number.parseInt(e.target.value))}
+                style={{
+                  width: isTablet ? 60 : 80,
+                  height: 4,
+                  backgroundColor: "rgba(255,255,255,0.3)",
+                  borderRadius: 2,
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isTablet ? 10 : 12,
+                  fontWeight: "700",
+                  fontFamily: "monospace",
+                  minWidth: isTablet ? 30 : 40,
+                  textAlign: "center",
+                  color: "white"
+                }}
+              >
+                {wordCount}
+              </span>
+            </div>
+          )}
+
+          {/* Mobile Word Count - Simplified */}
+          {isMobile && (
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: 10,
+              color: "white"
+            }}>
+              <span>W:</span>
+              <span style={{ fontFamily: "monospace", fontWeight: "700" }}>{wordCount}</span>
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -256,73 +298,32 @@ const Header: React.FC<HeaderProps> = ({
             {isFullscreen ? (isMobile ? "EXIT" : "EXIT FULL") : (isMobile ? "FULL" : "FULLSCREEN")}
           </button>
 
-          {!isMobile && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: isTablet ? "8px" : "12px",
-                padding: isTablet ? "6px 12px" : "8px 16px",
-                border: "1px solid rgba(255,255,255,0.3)",
-                backgroundColor: "rgba(0,0,0,0.2)",
-                minWidth: "fit-content"
-              }}
-            >
-              <span
-                style={{
-                  fontSize: isTablet ? 10 : 12,
-                  fontWeight: "500",
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                  color: "white"
-                }}
-              >
-                WORDS:
-              </span>
-              <input
-                type="range"
-                min="50"
-                max="2000"
-                step="50"
-                value={wordCount}
-                onChange={(e) => onWordCountChange(Number.parseInt(e.target.value))}
-                style={{
-                  width: isTablet ? 60 : 80,
-                  height: 4,
-                  backgroundColor: "rgba(255,255,255,0.3)",
-                  borderRadius: 2,
-                  outline: "none",
-                  cursor: "pointer"
-                }}
-              />
-              <span
-                style={{
-                  fontSize: isTablet ? 10 : 12,
-                  fontWeight: "700",
-                  fontFamily: "monospace",
-                  minWidth: isTablet ? 30 : 40,
-                  textAlign: "center",
-                  color: "white"
-                }}
-              >
-                {wordCount}
-              </span>
-            </div>
-          )}
-
-          {/* Mobile Word Count - Simplified */}
-          {isMobile && (
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: 10,
-              color: "white"
-            }}>
-              <span>W:</span>
-              <span style={{ fontFamily: "monospace", fontWeight: "700" }}>{wordCount}</span>
-            </div>
-          )}
+          <button
+            onClick={onShowHowTo}
+            style={{
+              fontSize: isMobile ? 10 : 12,
+              fontWeight: "500",
+              textTransform: "uppercase",
+              letterSpacing: 0.5,
+              padding: isMobile ? "6px 12px" : "8px 16px",
+              border: "1px solid rgba(255,255,255,0.5)",
+              backgroundColor: "transparent",
+              color: "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              minWidth: "fit-content"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "white"
+              e.currentTarget.style.color = "white"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"
+              e.currentTarget.style.color = "rgba(255,255,255,0.7)"
+            }}
+          >
+            {isMobile ? "?" : "HELP"}
+          </button>
         </div>
       )}
     </div>
