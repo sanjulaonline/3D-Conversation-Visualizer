@@ -58,6 +58,10 @@ export default function ChatGPTVisualizerApp() {
     if (file) {
       setSelectedFile(file)
       setShowFileUpload(false)
+      // Automatically start analysis
+      setTimeout(() => {
+        analyzeFileWithFile(file)
+      }, 100)
     }
   }, [])
 
@@ -70,6 +74,10 @@ export default function ChatGPTVisualizerApp() {
       if (file.name.endsWith('.json')) {
         setSelectedFile(file)
         setShowFileUpload(false)
+        // Automatically start analysis
+        setTimeout(() => {
+          analyzeFileWithFile(file)
+        }, 100)
       } else {
         showError("Please upload a JSON file.")
       }
@@ -184,6 +192,51 @@ export default function ChatGPTVisualizerApp() {
       setIsAnalyzing(false)
     }
   }, [selectedFile, wordCount, showError])
+
+  const analyzeFileWithFile = useCallback(async (file: File) => {
+    if (!file.name.endsWith(".json")) {
+      showError("Please upload a JSON file.")
+      return
+    }
+
+    setIsAnalyzing(true)
+
+    try {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        try {
+          const conversationsData = JSON.parse(event.target?.result as string)
+          const analysis = await extractWordsFromConversations(conversationsData, wordCount)
+
+          const generatedNodes = generateNodes(analysis.words)
+          const generatedLinks = generateLinks(generatedNodes)
+
+          setNodes(generatedNodes)
+          setLinks(generatedLinks)
+          setShowHowTo(false)
+        } catch (parseError: any) {
+          console.error("Error parsing JSON or analyzing data:", parseError)
+          showError(
+            "Error processing JSON file. Please ensure it's a valid `conversations.json` from ChatGPT. Details: " +
+              parseError.message,
+          )
+        } finally {
+          setIsAnalyzing(false)
+        }
+      }
+
+      reader.onerror = () => {
+        showError("Error reading file. Please try again.")
+        setIsAnalyzing(false)
+      }
+
+      reader.readAsText(file)
+    } catch (error: any) {
+      console.error("Overall analysis error:", error)
+      showError("An unexpected error occurred during analysis: " + error.message)
+      setIsAnalyzing(false)
+    }
+  }, [wordCount, showError])
 
   // Show landing page
   if (showLanding) {
