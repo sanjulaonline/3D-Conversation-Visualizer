@@ -194,12 +194,17 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
         </div>
       </div>
 
-      {/* Bottom Right Links - Enhanced Social Media */}
-      <div style={{ position: "absolute", bottom: 40, right: 40 }}>
+      {/* Centered Social Media */}
+      <div style={{ 
+        position: "absolute", 
+        bottom: "10%", 
+        left: "50%", 
+        transform: "translateX(-50%)" 
+      }}>
         <div style={{ 
           display: "flex", 
           flexDirection: "column", 
-          alignItems: "flex-end", 
+          alignItems: "center", 
           gap: "16px" 
         }}>
           {/* Social Media Icons */}
@@ -329,7 +334,7 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
           <p style={{ 
             fontSize: 12, 
             lineHeight: "1em", 
-            textAlign: "right", 
+            textAlign: "center", 
             color: "white",
             margin: 0
           }}>
