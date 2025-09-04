@@ -1,4 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 3D Conversation Visualizer
+
+A modern, responsive Next.js application for visualizing ChatGPT conversations in an interactive 3D space using Three.js.
+
+## Features
+
+- 🎨 **Modern UI**: Responsive design with gradient backgrounds and smooth animations
+- 🔍 **3D Visualization**: Interactive Three.js-powered 3D word cloud
+- 📱 **Mobile Friendly**: Fully responsive design that works on all devices
+- ⚡ **Performance Optimized**: Modular architecture with separated components
+- 🎮 **Interactive Controls**: Mouse/touch controls for rotation, zoom, and selection
+- 📊 **Word Analytics**: Click on words to see detailed statistics
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── globals.css          # Global styles and Tailwind imports
+│   └── page.tsx             # Main application page
+├── components/
+│   ├── Header.tsx           # Responsive header with navigation
+│   ├── HowToModal.tsx       # Instructions modal
+│   ├── MessageModal.tsx     # Word details modal
+│   ├── ThreeVisualization.tsx # Three.js visualization component
+│   └── index.ts             # Component exports
+├── types/
+│   └── index.ts             # TypeScript type definitions
+├── utils/
+│   ├── textAnalysis.ts      # Text processing and analysis functions
+│   ├── graphGeneration.ts   # Node and link generation logic
+│   └── index.ts             # Utility exports
+└── styles/
+    └── components.css       # Custom component styles
+```
+
+## Key Improvements Made
+
+1. **Modular Architecture**: Split the monolithic component into focused, reusable components
+2. **Responsive Design**: Mobile-first approach with breakpoint-specific styling
+3. **Modern UI**: Gradient backgrounds, glassmorphism, and smooth animations
+4. **Better UX**: Improved loading states, error handling, and user feedback
+5. **Performance**: Optimized Three.js rendering and proper cleanup
+6. **Accessibility**: Better contrast, focus states, and keyboard navigation
+7. **Code Organization**: Clear separation of concerns and maintainable structure
 
 ## Getting Started
 

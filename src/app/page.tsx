@@ -157,8 +157,9 @@ export default function ChatGPTVisualizerPage() {
 
       {/* Instructions */}
       {showInstructions && !isFullscreen && (
-        <div className="fixed top-16 left-4 text-sm bg-black/60 p-2 rounded">
-          <strong>Interact:</strong> Drag mouse to rotate | Mouse wheel to zoom | Click word for stats
+        <div className="fixed top-20 sm:top-24 left-4 text-xs sm:text-sm bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md p-3 rounded-lg border border-slate-600 max-w-[calc(100vw-2rem)] sm:max-w-none">
+          <strong className="text-blue-400">Interact:</strong> 
+          <span className="block sm:inline"> Drag to rotate • Scroll to zoom • Click words for stats</span>
         </div>
       )}
 
@@ -173,15 +174,19 @@ export default function ChatGPTVisualizerPage() {
 
       {/* Loading Overlay */}
       {isAnalyzing && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <span className="text-white text-xl">Loading...</span>
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 p-8 rounded-xl border border-slate-600 text-center max-w-sm mx-4">
+            <div className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <span className="text-white text-lg font-medium">Analyzing conversations...</span>
+            <p className="text-slate-400 text-sm mt-2">This may take a few moments</p>
+          </div>
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-800/80 px-5 py-2 rounded z-50">
-          {error}
+        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-red-900/95 to-red-800/95 backdrop-blur-md px-6 py-3 rounded-lg z-50 border border-red-700 max-w-[calc(100vw-2rem)] text-center">
+          <p className="text-white font-medium">{error}</p>
         </div>
       )}
 
