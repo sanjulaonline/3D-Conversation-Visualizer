@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { useGLTF, Stage, Grid, OrbitControls, Environment } from "@react-three/drei"
 import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing"
@@ -11,6 +11,22 @@ interface LandingHeroProps {
 }
 
 export default function LandingHero({ onGetStarted }: LandingHeroProps) {
+  const [isLargeScreen, setIsLargeScreen] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 570)
+    }
+    
+    // Set initial value
+    handleResize()
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize)
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
   return (
     <div className="relative w-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
       {/* 3D Scene */}
@@ -160,6 +176,7 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
               padding: "12px 24px",
               cursor: "pointer",
               transition: "all 0.3s ease",
+              display: isLargeScreen ? "block" : "none",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "white"
@@ -184,6 +201,47 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
           <a href="#" style={{ color: "white", textDecoration: "none", marginRight: "10px" }}>docs</a>
           <a href="#" style={{ color: "white", textDecoration: "none" }}>github</a>
         </p>
+      </div>
+
+      {/* Centered Button for larger screens */}
+      <div 
+        style={{ 
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: isLargeScreen ? "none" : "block",
+          pointerEvents: "all"
+        }}
+      >
+        <button
+          onClick={onGetStarted}
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 16,
+            fontWeight: "700",
+            lineHeight: "1em",
+            textAlign: "center",
+            color: "white",
+            letterSpacing: -0.5,
+            whiteSpace: "nowrap",
+            background: "transparent",
+            border: "2px solid white",
+            padding: "12px 24px",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "white"
+            e.currentTarget.style.color = "black"
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent"
+            e.currentTarget.style.color = "white"
+          }}
+        >
+          START VISUALIZATION
+        </button>
       </div>
     </div>
   )
