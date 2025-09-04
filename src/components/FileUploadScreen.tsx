@@ -235,7 +235,7 @@ export default function FileUploadScreen({
             }}
           >
             <li>Go to ChatGPT Settings → Data Controls</li>
-            <li>Click "Export data"</li>
+            <li>Click &quot;Export data&quot;</li>
             <li>Wait for email with download link</li>
             <li>Extract and upload the conversations.json file</li>
           </ol>
