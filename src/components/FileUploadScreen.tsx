@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useCallback } from "react"
+import React, { useCallback, useState } from "react"
+import HowToModal from "./HowToModal"
 
 interface FileUploadScreenProps {
   onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -17,6 +18,8 @@ export default function FileUploadScreen({
   isDragging,
   setIsDragging
 }: FileUploadScreenProps) {
+  
+  const [showHowToModal, setShowHowToModal] = useState(false)
   
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -209,38 +212,77 @@ export default function FileUploadScreen({
         <div
           style={{
             marginTop: 32,
-            padding: "24px",
-            background: "rgba(255,255,255,0.05)",
-            borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            textAlign: "left"
+            display: "flex",
+            gap: "16px",
+            flexDirection: "column",
+            alignItems: "center"
           }}
         >
-          <h4
+          <button
+            onClick={() => setShowHowToModal(true)}
             style={{
-              fontSize: 16,
+              padding: "16px 32px",
+              background: "rgba(255,255,255,0.1)",
+              color: "white",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: "8px",
+              fontSize: "16px",
               fontWeight: "600",
-              marginBottom: 12,
-              color: "white"
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.2)"
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"
+              e.currentTarget.style.transform = "translateY(-2px)"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.1)"
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"
+              e.currentTarget.style.transform = "translateY(0)"
             }}
           >
-            How to get your ChatGPT data:
-          </h4>
-          <ol
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9,9h.01a.5.5 0 0 0 0-1"/>
+              <path d="M9.5,12.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"/>
+              <path d="M12,16.5v0"/>
+            </svg>
+            How to Get Your ChatGPT Data
+          </button>
+          
+          <div
             style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,0.7)",
-              lineHeight: "1.6em",
-              paddingLeft: 20
+              padding: "20px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.1)",
+              textAlign: "center",
+              maxWidth: "400px"
             }}
           >
-            <li>Go to ChatGPT Settings → Data Controls</li>
-            <li>Click &quot;Export data&quot;</li>
-            <li>Wait for email with download link</li>
-            <li>Extract and upload the conversations.json file</li>
-          </ol>
+            <p
+              style={{
+                fontSize: 14,
+                color: "rgba(255,255,255,0.7)",
+                lineHeight: "1.5",
+                margin: 0
+              }}
+            >
+              Need help? Click the button above for detailed step-by-step instructions with screenshots on how to export your ChatGPT conversations.
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* How To Modal */}
+      <HowToModal 
+        isOpen={showHowToModal} 
+        onClose={() => setShowHowToModal(false)} 
+      />
     </div>
   )
 }
