@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
-import { Node, Link, Analysis } from "@/types"
+import { Node, Link } from "@/types"
 import { extractWordsFromConversations, getWordCountWarning } from "@/utils/textAnalysis"
 import { generateNodes, generateLinks } from "@/utils/graphGeneration"
 import LandingHero from "@/components/LandingHero"
@@ -51,21 +51,42 @@ export default function ChatGPTVisualizerApp() {
     setTimeout(() => setError(null), 5000)
   }, [])
 
+  const handleFileUpload = useCallback((file: File) => {
+    setSelectedFile(file)
+    setShowFileUpload(false)
+    // Automatically start analysis
+    if (file && file.name.endsWith(".json")) {
+      setIsAnalyzing(true)
+      setTimeout(() => {
+        // Trigger file processing
+        const reader = new FileReader()
+        reader.onload = async (event) => {
+          try {
+            const conversationsData = JSON.parse(event.target?.result as string)
+            const analysis = await extractWordsFromConversations(conversationsData, wordCount)
+            const generatedNodes = generateNodes(analysis.words)
+            const generatedLinks = generateLinks(generatedNodes)
+            setNodes(generatedNodes)
+            setLinks(generatedLinks)
+            setShowHowTo(false)
+          } catch (error) {
+            const err = error as Error
+            showError("Error processing file: " + err.message)
+          } finally {
+            setIsAnalyzing(false)
+          }
+        }
+        reader.readAsText(file)
+      }, 100)
+    }
+  }, [wordCount, showError])
+
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       handleFileUpload(file)
     }
-  }, [])
-
-  const handleFileUpload = useCallback((file: File) => {
-    setSelectedFile(file)
-    setShowFileUpload(false)
-    // Automatically start analysis
-    setTimeout(() => {
-      analyzeFileWithFile(file)
-    }, 100)
-  }, [])
+  }, [handleFileUpload])
 
   const handleFileDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -81,16 +102,6 @@ export default function ChatGPTVisualizerApp() {
     }
   }, [handleFileUpload, showError])
 
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    setIsDragging(true)
-  }, [])
-
-  const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    setIsDragging(false)
-  }, [])
-
   const wordCountWarning = getWordCountWarning(wordCount)
 
   const toggleFullscreen = useCallback(async () => {
@@ -100,9 +111,10 @@ export default function ChatGPTVisualizerApp() {
       } else {
         await document.exitFullscreen()
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as Error
       setCustomMessage(
-        `Error attempting to enable full-screen mode: ${err.message} (${err.name}). Please try again or check browser settings.`,
+        `Error attempting to enable full-screen mode: ${error.message} (${error.name}). Please try again or check browser settings.`,
       )
     }
   }, [])
@@ -166,11 +178,12 @@ export default function ChatGPTVisualizerApp() {
           setNodes(generatedNodes)
           setLinks(generatedLinks)
           setShowHowTo(false)
-        } catch (parseError: any) {
+        } catch (parseError: unknown) {
+          const error = parseError as Error
           console.error("Error parsing JSON or analyzing data:", parseError)
           showError(
             "Error processing JSON file. Please ensure it's a valid `conversations.json` from ChatGPT. Details: " +
-              parseError.message,
+              error.message,
           )
         } finally {
           setIsAnalyzing(false)
@@ -183,9 +196,10 @@ export default function ChatGPTVisualizerApp() {
       }
 
       reader.readAsText(selectedFile)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error
       console.error("Overall analysis error:", error)
-      showError("An unexpected error occurred during analysis: " + error.message)
+      showError("An unexpected error occurred during analysis: " + err.message)
       setIsAnalyzing(false)
     }
   }, [selectedFile, wordCount, showError])
@@ -211,11 +225,12 @@ export default function ChatGPTVisualizerApp() {
           setNodes(generatedNodes)
           setLinks(generatedLinks)
           setShowHowTo(false)
-        } catch (parseError: any) {
+        } catch (parseError: unknown) {
+          const error = parseError as Error
           console.error("Error parsing JSON or analyzing data:", parseError)
           showError(
             "Error processing JSON file. Please ensure it's a valid `conversations.json` from ChatGPT. Details: " +
-              parseError.message,
+              error.message,
           )
         } finally {
           setIsAnalyzing(false)
@@ -228,9 +243,10 @@ export default function ChatGPTVisualizerApp() {
       }
 
       reader.readAsText(file)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error
       console.error("Overall analysis error:", error)
-      showError("An unexpected error occurred during analysis: " + error.message)
+      showError("An unexpected error occurred during analysis: " + err.message)
       setIsAnalyzing(false)
     }
   }, [wordCount, showError])
