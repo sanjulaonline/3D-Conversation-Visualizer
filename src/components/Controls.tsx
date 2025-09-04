@@ -41,7 +41,7 @@ const Controls: React.FC<ControlsProps> = ({
         <input
           type="range"
           min="50"
-          max="2000"
+          max="1000"
           step="50"
           value={wordCount}
           onChange={(e) => onWordCountChange(Number.parseInt(e.target.value))}
