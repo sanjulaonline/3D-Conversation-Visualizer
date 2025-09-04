@@ -5,7 +5,6 @@ import { Canvas, useFrame } from "@react-three/fiber"
 import { useGLTF, Stage, Grid, OrbitControls, Environment } from "@react-three/drei"
 import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing"
 import { easing } from "maath"
-import TrueFocusText from "./true-focus-text"
 
 interface LandingHeroProps {
   onGetStarted: () => void
@@ -14,17 +13,6 @@ interface LandingHeroProps {
 export default function LandingHero({ onGetStarted }: LandingHeroProps) {
   return (
     <div className="relative w-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes trueFocus {
-            to {
-              filter: blur(0px) !important;
-              opacity: 1 !important;
-              transform: translateY(0px) !important;
-            }
-          }
-        `
-      }} />
       {/* 3D Scene */}
       <div className="absolute inset-0">
         <Canvas flat shadows camera={{ position: [-15, 0, 10], fov: 25 }}>
@@ -64,96 +52,152 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
         </Canvas>
       </div>
 
-      {/* UI Overlay */}
-      <div className="relative z-10 flex items-center justify-center h-full">
-        <div className="text-center max-w-4xl mx-auto px-6">
-          {/* Main Title with True Focus Animation */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            <div className="bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-              <TrueFocusText text="3D Conversation" delay={200} />
-            </div>
-            <br />
-            <div className="bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400 bg-clip-text text-transparent">
-              <TrueFocusText text="Visualizer" delay={600} />
-            </div>
-          </h1>
-
-          {/* Subtitle with staggered animation */}
-          <div className="text-xl md:text-2xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-            <TrueFocusText
-              text="Transform your ChatGPT conversations into stunning 3D word clouds."
-              delay={1000}
-              className="block mb-2"
-            />
-            <TrueFocusText
-              text="Explore the most frequent words in an immersive visual experience."
-              delay={1200}
-              className="block"
-            />
-          </div>
-
-          {/* CTA Button with enhanced styling */}
-          <div className="mb-16">
-            <button
-              onClick={onGetStarted}
-              className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 via-cyan-500 to-emerald-500 hover:from-blue-400 hover:via-cyan-400 hover:to-emerald-400 text-white font-bold text-lg rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl shadow-lg shadow-blue-500/25"
-              style={{
-                filter: "blur(8px)",
-                opacity: "0",
-                transform: "translateY(20px)",
-                animation: "trueFocus 1s ease-out 1.4s forwards"
-              }}
-            >
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-cyan-300 to-emerald-300 rounded-2xl blur opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
-            </button>
-          </div>
-
-          {/* Features with modern glass morphism */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-300">
-            <div 
-              className="bg-slate-800/20 backdrop-blur-xl p-6 rounded-2xl border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300 hover:bg-slate-800/30"
-              style={{
-                filter: "blur(8px)",
-                opacity: "0",
-                transform: "translateY(20px)",
-                animation: "trueFocus 1s ease-out 1.6s forwards"
-              }}
-            >
-              <div className="text-blue-400 text-3xl mb-4">🎨</div>
-              <h3 className="font-semibold mb-3 text-slate-200">Beautiful 3D Visualization</h3>
-              <p className="text-sm text-slate-400">Interactive word clouds with stunning visual effects</p>
-            </div>
-
-            <div 
-              className="bg-slate-800/20 backdrop-blur-xl p-6 rounded-2xl border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 hover:bg-slate-800/30"
-              style={{
-                filter: "blur(8px)",
-                opacity: "0",
-                transform: "translateY(20px)",
-                animation: "trueFocus 1s ease-out 1.8s forwards"
-              }}
-            >
-              <div className="text-cyan-400 text-3xl mb-4">📊</div>
-              <h3 className="font-semibold mb-3 text-slate-200">Smart Analysis</h3>
-              <p className="text-sm text-slate-400">Analyze word frequency and conversation patterns</p>
-            </div>
-
-            <div 
-              className="bg-slate-800/20 backdrop-blur-xl p-6 rounded-2xl border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-300 hover:bg-slate-800/30"
-              style={{
-                filter: "blur(8px)",
-                opacity: "0",
-                transform: "translateY(20px)",
-                animation: "trueFocus 1s ease-out 2.0s forwards"
-              }}
-            >
-              <div className="text-emerald-400 text-3xl mb-4">⚡</div>
-              <h3 className="font-semibold mb-3 text-slate-200">Real-time Interaction</h3>
-              <p className="text-sm text-slate-400">Click, drag, and explore your conversations</p>
-            </div>
-          </div>
+      {/* UI Overlay - Minimal Typography Style */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          padding: 40,
+          display: "inline-flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          pointerEvents: "none",
+        }}
+      >
+        {/* Header Section */}
+        <div style={{ width: "100%", padding: 0, display: "inline-flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              flex: "1 1 0%",
+              height: 30,
+              fontSize: 30,
+              fontWeight: "700",
+              lineHeight: "30px",
+              color: "white",
+              letterSpacing: -2,
+            }}
+          >
+            3D CONVERSATION
+          </p>
+          <div style={{ flex: "1 1 0%", display: "flex", gap: "2em" }}></div>
+          <p style={{ flex: "1 1 0%", height: 30, fontSize: 30, lineHeight: "30px", textAlign: "right", color: "white" }}>⎑</p>
         </div>
+        
+        <div style={{ height: 60 }} />
+        
+        {/* Info Section */}
+        <div style={{ width: "100%", padding: 0, display: "inline-flex", flexDirection: "row", alignItems: "flex-start", justifyContent: "center" }}>
+          <p style={{ flex: "1 1 0%", height: "100%", fontSize: 12, lineHeight: "1.5em", color: "white" }}>
+            <b>ChatGPT Visualization</b>
+            <br />
+            Interactive Word Clouds
+            <br />
+            <b>—</b>
+          </p>
+          <div style={{ width: 10 }} />
+          <p
+            style={{
+              transform: "rotate3d(0, 0, 1, 90deg) translate3d(100%,10px,0)",
+              transformOrigin: "right",
+              fontSize: 12,
+              fontWeight: "700",
+              lineHeight: "100%",
+              textAlign: "right",
+              color: "white",
+              whiteSpace: "nowrap",
+            }}
+          >
+            MOVE MOUSE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ●
+          </p>
+        </div>
+        
+        <div style={{ height: 10 }} />
+        
+        {/* Main Display */}
+        <div
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            width: "100%",
+            flex: "1 1 0%",
+            padding: 0,
+            display: "inline-flex",
+            flexDirection: "row",
+            alignItems: "flex-end",
+            justifyContent: "center",
+          }}
+        >
+          <p style={{ flex: "1 1 0%", fontSize: 250, lineHeight: "1em", color: "white", margin: 0, letterSpacing: -10 }}>3D</p>
+          <div style={{ width: 10 }} />
+          <p style={{ flex: "1 1 0%", fontSize: 250, lineHeight: "100%", textAlign: "right", color: "white", margin: 0, letterSpacing: -10 }}>_VIZ</p>
+        </div>
+        
+        <div style={{ height: 60 }} />
+        
+        {/* Footer Section */}
+        <div
+          style={{
+            pointerEvents: "all",
+            cursor: "auto",
+            width: "100%",
+            padding: 0,
+            display: "inline-flex",
+            flexDirection: "row",
+            alignItems: "flex-end",
+            justifyContent: "center",
+          }}
+        >
+          <p style={{ whiteSpace: "nowrap", flex: "1 1 0%", fontSize: 12, lineHeight: "1.5em", color: "white" }}>
+            <b>Advanced Analytics</b>
+            <br />
+            Real-time Processing
+          </p>
+          <div style={{ width: 10 }} />
+          <button
+            onClick={onGetStarted}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              flex: "1 1 0%",
+              fontSize: 16,
+              fontWeight: "700",
+              lineHeight: "1em",
+              textAlign: "center",
+              color: "white",
+              letterSpacing: -0.5,
+              whiteSpace: "nowrap",
+              background: "transparent",
+              border: "2px solid white",
+              padding: "12px 24px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "white"
+              e.currentTarget.style.color = "black"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent"
+              e.currentTarget.style.color = "white"
+            }}
+          >
+            START VISUALIZATION
+          </button>
+          <div style={{ width: 10 }} />
+          <p style={{ flex: "1 1 0%", fontSize: 12, lineHeight: "1em", textAlign: "right", color: "white" }}></p>
+        </div>
+      </div>
+
+      {/* Bottom Right Links */}
+      <div style={{ position: "absolute", bottom: 40, right: 40 }}>
+        <p style={{ flex: "1 1 0%", fontSize: 12, lineHeight: "1em", textAlign: "right", color: "white" }}>
+          <a href="#" style={{ color: "white", textDecoration: "none", marginRight: "10px" }}>about</a>
+          <a href="#" style={{ color: "white", textDecoration: "none", marginRight: "10px" }}>docs</a>
+          <a href="#" style={{ color: "white", textDecoration: "none" }}>github</a>
+        </p>
       </div>
     </div>
   )
