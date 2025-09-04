@@ -194,17 +194,18 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
         </div>
       </div>
 
-      {/* Centered Social Media */}
+      {/* Responsive Social Media */}
       <div style={{ 
         position: "absolute", 
-        bottom: "10%", 
-        left: "50%", 
-        transform: "translateX(-50%)" 
+        bottom: isLargeScreen ? "10%" : "40px", 
+        left: isLargeScreen ? "50%" : "auto",
+        right: isLargeScreen ? "auto" : "40px",
+        transform: isLargeScreen ? "translateX(-50%)" : "none" 
       }}>
         <div style={{ 
           display: "flex", 
           flexDirection: "column", 
-          alignItems: "center", 
+          alignItems: isLargeScreen ? "center" : "flex-end", 
           gap: "16px" 
         }}>
           {/* Social Media Icons */}
@@ -334,7 +335,7 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
           <p style={{ 
             fontSize: 12, 
             lineHeight: "1em", 
-            textAlign: "center", 
+            textAlign: isLargeScreen ? "right" : "center", 
             color: "white",
             margin: 0
           }}>
