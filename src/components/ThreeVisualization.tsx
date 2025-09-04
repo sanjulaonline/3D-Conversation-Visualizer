@@ -163,7 +163,7 @@ const ThreeVisualization: React.FC<ThreeVisualizationProps> = ({
     const distributionRadius = baseDistributionRadius + scalingFactor
 
     // Create nodes
-    nodes.forEach((node, index) => {
+    nodes.forEach((node) => {
       const geometry = new THREE.SphereGeometry(2, 8, 8)
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
