@@ -38,19 +38,19 @@ const HowToModal: React.FC<HowToModalProps> = ({ isOpen, onClose }) => {
           <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
             <p className="flex items-center gap-3">
               <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
-              Select "Settings & Beta" from the menu.
+              Select &quot;Settings &amp; Beta&quot; from the menu.
             </p>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
             <p className="flex items-center gap-3">
               <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</span>
-              Click on "Data Controls" in the left sidebar.
+              Click on &quot;Data Controls&quot; in the left sidebar.
             </p>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
             <p className="flex items-center gap-3">
               <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">5</span>
-              Click "Export data" and confirm your request.
+              Click &quot;Export data&quot; and confirm your request.
             </p>
           </div>
           <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
