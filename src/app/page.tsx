@@ -9,9 +9,13 @@ import Header from "@/components/Header"
 import ThreeVisualization from "@/components/ThreeVisualization"
 import HowToModal from "@/components/HowToModal"
 import MessageModal from "@/components/MessageModal"
+import LandingHero from "@/components/LandingHero"
 
-export default function ChatGPTVisualizerPage() {
-  // State management
+export default function ChatGPTVisualizerApp() {
+  // Landing page state
+  const [showLanding, setShowLanding] = useState(true)
+  
+  // Existing state management
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [wordCount, setWordCount] = useState(100)
@@ -25,6 +29,21 @@ export default function ChatGPTVisualizerPage() {
   const [nodes, setNodes] = useState<Node[]>([])
   const [links, setLinks] = useState<Link[]>([])
 
+  const handleGetStarted = () => {
+    setShowLanding(false)
+  }
+
+  const handleBackToLanding = () => {
+    setShowLanding(true)
+    // Reset visualizer state
+    setNodes([])
+    setLinks([])
+    setSceneInitialized(false)
+    setSelectedFile(null)
+    setShowInstructions(false)
+  }
+
+  // Existing functions
   const showError = useCallback((message: string) => {
     setError(message)
     setTimeout(() => setError(null), 5000)
@@ -136,28 +155,47 @@ export default function ChatGPTVisualizerPage() {
     }
   }, [selectedFile, wordCount, showError])
 
+  // Show landing page
+  if (showLanding) {
+    return <LandingHero onGetStarted={handleGetStarted} />
+  }
+
+  // Show visualizer
   return (
     <div className="relative w-screen h-screen bg-black text-white font-sans overflow-hidden">
+      {/* Back to Landing Button */}
+      <button
+        onClick={handleBackToLanding}
+        className="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/90 hover:bg-slate-700/90 backdrop-blur-md border border-slate-600 rounded-lg text-white font-medium transition-all duration-200 flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        <span className="hidden sm:inline">Back to Home</span>
+      </button>
+
       {/* Header */}
-      <Header
-        selectedFile={selectedFile}
-        onFileSelect={handleFileSelect}
-        onAnalyze={analyzeFile}
-        isAnalyzing={isAnalyzing}
-        onShowHowTo={() => setShowHowTo(true)}
-        sceneInitialized={sceneInitialized}
-        autoRotation={autoRotation}
-        onAutoRotationChange={setAutoRotation}
-        onToggleFullscreen={toggleFullscreen}
-        isFullscreen={isFullscreen}
-        wordCount={wordCount}
-        onWordCountChange={setWordCount}
-        wordCountWarning={wordCountWarning}
-      />
+      <div className="pt-16">
+        <Header
+          selectedFile={selectedFile}
+          onFileSelect={handleFileSelect}
+          onAnalyze={analyzeFile}
+          isAnalyzing={isAnalyzing}
+          onShowHowTo={() => setShowHowTo(true)}
+          sceneInitialized={sceneInitialized}
+          autoRotation={autoRotation}
+          onAutoRotationChange={setAutoRotation}
+          onToggleFullscreen={toggleFullscreen}
+          isFullscreen={isFullscreen}
+          wordCount={wordCount}
+          onWordCountChange={setWordCount}
+          wordCountWarning={wordCountWarning}
+        />
+      </div>
 
       {/* Instructions */}
       {showInstructions && !isFullscreen && (
-        <div className="fixed top-20 sm:top-24 left-4 text-xs sm:text-sm bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md p-3 rounded-lg border border-slate-600 max-w-[calc(100vw-2rem)] sm:max-w-none">
+        <div className="fixed top-36 sm:top-40 left-4 text-xs sm:text-sm bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md p-3 rounded-lg border border-slate-600 max-w-[calc(100vw-2rem)] sm:max-w-none">
           <strong className="text-blue-400">Interact:</strong> 
           <span className="block sm:inline"> Drag to rotate • Scroll to zoom • Click words for stats</span>
         </div>
