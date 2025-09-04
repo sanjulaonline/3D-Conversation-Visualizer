@@ -17,21 +17,11 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
       <div className="absolute inset-0">
         <Canvas flat shadows camera={{ position: [-15, 0, 10], fov: 25 }}>
           <fog attach="fog" args={["#0f0f23", 15, 22.5]} />
-          <Stage intensity={0.5}  shadows={{ type: 'accumulative', bias: -0.001, intensity: Math.PI }} adjustCamera={false}
+          <Stage intensity={0.5} environment="city" shadows={{ type: 'accumulative', bias: -0.001, intensity: Math.PI }} adjustCamera={false}
           >
             <Kamdo rotation={[0, Math.PI, 0]} />
           </Stage>
-          <Grid
-            renderOrder={-1}
-            position={[0, -1.85, 0]}
-            infiniteGrid
-            cellSize={0.6}
-            cellThickness={0.6}
-            sectionSize={3.3}
-            sectionThickness={1.5}
-            sectionColor="#3b82f6"
-            fadeDistance={30}
-          />
+          <Grid renderOrder={-1} position={[0, -1.85, 0]} infiniteGrid cellSize={0.6} cellThickness={0.6} sectionSize={3.3} sectionThickness={1.5} sectionColor="#7f7fff" fadeDistance={30} />
           <OrbitControls
             autoRotate
             autoRotateSpeed={0.05}
