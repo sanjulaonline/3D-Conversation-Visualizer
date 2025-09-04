@@ -1,103 +1,195 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import type React from "react"
+import { useState, useEffect, useCallback } from "react"
+import { Node, Link, Analysis } from "@/types"
+import { extractWordsFromConversations, getWordCountWarning } from "@/utils/textAnalysis"
+import { generateNodes, generateLinks } from "@/utils/graphGeneration"
+import Header from "@/components/Header"
+import ThreeVisualization from "@/components/ThreeVisualization"
+import HowToModal from "@/components/HowToModal"
+import MessageModal from "@/components/MessageModal"
+
+export default function ChatGPTVisualizerPage() {
+  // State management
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [wordCount, setWordCount] = useState(100)
+  const [autoRotation, setAutoRotation] = useState(true)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(false)
+  const [showHowTo, setShowHowTo] = useState(false)
+  const [customMessage, setCustomMessage] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [sceneInitialized, setSceneInitialized] = useState(false)
+  const [nodes, setNodes] = useState<Node[]>([])
+  const [links, setLinks] = useState<Link[]>([])
+
+  const showError = useCallback((message: string) => {
+    setError(message)
+    setTimeout(() => setError(null), 5000)
+  }, [])
+
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }, [])
+
+  const wordCountWarning = getWordCountWarning(wordCount)
+
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+      } else {
+        await document.exitFullscreen()
+      }
+    } catch (err: any) {
+      setCustomMessage(
+        `Error attempting to enable full-screen mode: ${err.message} (${err.name}). Please try again or check browser settings.`,
+      )
+    }
+  }, [])
+
+  const handleNodeClick = useCallback((node: Node) => {
+    const totalFreq = nodes.reduce((sum, n) => sum + n.frequency, 0)
+    const percentage = ((node.frequency / totalFreq) * 100).toFixed(2)
+    const rank = nodes.findIndex((n) => n.word === node.word) + 1
+    setCustomMessage(
+      `🔤 Word: "${node.word}"\n📊 Frequency: ${node.frequency} times\n📈 Percentage: ${percentage}% of total words\n🏆 Rank: #${rank}`,
+    )
+  }, [nodes])
+
+  const onSceneInitialized = useCallback(() => {
+    setSceneInitialized(true)
+    setShowInstructions(true)
+  }, [])
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && document.fullscreenElement) {
+        document.exitFullscreen()
+      }
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    document.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [])
+
+  const analyzeFile = useCallback(async () => {
+    if (!selectedFile) {
+      showError("Please select a file first")
+      return
+    }
+    if (!selectedFile.name.endsWith(".json")) {
+      showError("Please upload a JSON file.")
+      return
+    }
+
+    setIsAnalyzing(true)
+
+    try {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        try {
+          const conversationsData = JSON.parse(event.target?.result as string)
+          const analysis = await extractWordsFromConversations(conversationsData, wordCount)
+
+          const generatedNodes = generateNodes(analysis.words)
+          const generatedLinks = generateLinks(generatedNodes)
+
+          setNodes(generatedNodes)
+          setLinks(generatedLinks)
+          setShowHowTo(false)
+        } catch (parseError: any) {
+          console.error("Error parsing JSON or analyzing data:", parseError)
+          showError(
+            "Error processing JSON file. Please ensure it's a valid `conversations.json` from ChatGPT. Details: " +
+              parseError.message,
+          )
+        } finally {
+          setIsAnalyzing(false)
+        }
+      }
+
+      reader.onerror = () => {
+        showError("Error reading file. Please try again.")
+        setIsAnalyzing(false)
+      }
+
+      reader.readAsText(selectedFile)
+    } catch (error: any) {
+      console.error("Overall analysis error:", error)
+      showError("An unexpected error occurred during analysis: " + error.message)
+      setIsAnalyzing(false)
+    }
+  }, [selectedFile, wordCount, showError])
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="relative w-screen h-screen bg-black text-white font-sans overflow-hidden">
+      {/* Header */}
+      <Header
+        selectedFile={selectedFile}
+        onFileSelect={handleFileSelect}
+        onAnalyze={analyzeFile}
+        isAnalyzing={isAnalyzing}
+        onShowHowTo={() => setShowHowTo(true)}
+        sceneInitialized={sceneInitialized}
+        autoRotation={autoRotation}
+        onAutoRotationChange={setAutoRotation}
+        onToggleFullscreen={toggleFullscreen}
+        isFullscreen={isFullscreen}
+        wordCount={wordCount}
+        onWordCountChange={setWordCount}
+        wordCountWarning={wordCountWarning}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Instructions */}
+      {showInstructions && !isFullscreen && (
+        <div className="fixed top-16 left-4 text-sm bg-black/60 p-2 rounded">
+          <strong>Interact:</strong> Drag mouse to rotate | Mouse wheel to zoom | Click word for stats
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+
+      {/* Three.js Visualization */}
+      <ThreeVisualization
+        nodes={nodes}
+        links={links}
+        autoRotation={autoRotation}
+        onNodeClick={handleNodeClick}
+        onSceneInitialized={onSceneInitialized}
+      />
+
+      {/* Loading Overlay */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <span className="text-white text-xl">Loading...</span>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-800/80 px-5 py-2 rounded z-50">
+          {error}
+        </div>
+      )}
+
+      {/* How to Get JSON Modal */}
+      <HowToModal isOpen={showHowTo} onClose={() => setShowHowTo(false)} />
+
+      {/* Custom Message Modal */}
+      <MessageModal message={customMessage} onClose={() => setCustomMessage(null)} />
     </div>
-  );
+  )
 }
