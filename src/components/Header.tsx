@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   isFullscreen,
   wordCount,
   onWordCountChange,
-  wordCountWarning,
+  // wordCountWarning, // TODO: Use this for validation display
 }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
