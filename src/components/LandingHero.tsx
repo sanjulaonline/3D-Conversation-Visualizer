@@ -18,10 +18,7 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
         <Canvas flat shadows camera={{ position: [-15, 0, 10], fov: 25 }}>
           <fog attach="fog" args={["#0f0f23", 15, 22.5]} />
           <Stage
-            intensity={0.5}
-            environment="city"
-            shadows={{ type: "accumulative", bias: -0.001, intensity: Math.PI }}
-            adjustCamera={false}
+            intensity={0.5} environment="city" shadows={{ type: 'accumulative', bias: -0.001, intensity: Math.PI }} adjustCamera={false}
           >
             <Kamdo rotation={[0, Math.PI, 0]} />
           </Stage>
