@@ -72,7 +72,7 @@ export default function LandingHero({ onGetStarted }: LandingHeroProps) {
     }
   }, [])
   return (
-    <div className="relativ w-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
+    <div className="relative w-screen h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden">
       {/* 3D Scene */}
       <div className="absolute inset-0">
         <Canvas flat shadows camera={{ position: [-15, 0, 10], fov: 25 }}>
